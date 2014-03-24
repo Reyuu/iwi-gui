@@ -15,9 +15,9 @@ while stateTrueLoop == True:
     irc.settimeout(TIMEOUTTIME)
     readbuffer = readbuffer + irc.recv(1024)
     if 'PING' in readbuffer:
-        print strftime("[*] [%H:%M:%S] Pinged and ponged", gmtime())
+        print("[*] [%H:%M:%S] Pinged and ponged", time.gmtime())
     temp = string.split(readbuffer, "\n")
-
+    print(temp)
     for line in temp:
         line = string.rstrip(line)
         line = string.split(line)
