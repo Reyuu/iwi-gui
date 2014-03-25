@@ -1,6 +1,6 @@
 import sys, socket, random, string, time
 import classesx1
-from configirc import *
+execfile("configirc.ini")
 
 readbuffer = ""
 stateTrueLoop = True
