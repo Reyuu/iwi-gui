@@ -11,20 +11,14 @@ irc.send("NICK %s\r\n" % NICK)
 irc.send("USER %s %s bla :%s\r\n" % (IDENT, HOST, REALNAME))
 time.sleep(5)
 irc.send("JOIN %s\r\n" % (CHAN))
+irc.settimeout(TIMEOUTTIME)
 
 while stateTrueLoop == True:
     try:
-        readbuffer = readbuffer + irc.recv(1024)
-    except readbuffer == "":
-        print('Where\'s data! Not connected or wrong server adress')
-        break
+        readbuffer = irc.recv(1024)
     except:
-        print('I donno what happen')
-        break
-
+        readbuffer = ""
     temp = string.split(readbuffer, "\n")
-    print(temp)
-
     for line in temp:
         try:
             line = string.rstrip(line)
@@ -32,8 +26,8 @@ while stateTrueLoop == True:
 
             if(line[0] == "PING"):
                 irc.send("PONG %s\r\n" % line[1])
-                print("Pinged and ponged")
+                print "Pinged and ponged"
+            print ' '.join(line)  # putting this at end of try;except clause because it
+            #  crashes on empty lines
         except:
             pass
-
-
