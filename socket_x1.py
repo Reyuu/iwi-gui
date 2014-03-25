@@ -22,9 +22,6 @@ while stateTrueLoop == True:
         print('I donno what happen')
         break
 
-        
-    if 'PING' in readbuffer:
-        print("Pinged and ponged")
     temp = string.split(readbuffer, "\n")
     print(temp)
 
@@ -35,6 +32,7 @@ while stateTrueLoop == True:
 
             if(line[0] == "PING"):
                 irc.send("PONG %s\r\n" % line[1])
+                print("Pinged and ponged")
         except:
             pass
 
