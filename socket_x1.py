@@ -14,11 +14,7 @@ irc.send("JOIN %s\r\n" % (JOIN))
 
 while stateTrueLoop == True:
     try:
-        irc.settimeout(TIMEOUTTIME)
         readbuffer = readbuffer + irc.recv(1024)
-    except socket.timeout:
-        print('Timeouted!')
-        break
     except readbuffer == "":
         print('Where\'s data!')
         break
