@@ -3,8 +3,8 @@ global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME
 execfile("configirc.ini")
 class Irc:
     def __init__(self):
-        readbuffer = ""
-        onChannelMsg = 'PRIVMSG %s :' % (CHAN)
+        self.readbuffer = ""
+        self.onChannelMsg = 'PRIVMSG %s :' % (CHAN)
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
     def connect(self):
         self.socket.connect((HOST, PORT))
@@ -14,25 +14,25 @@ class Irc:
         self.socket.send("JOIN %s\r\n" % (CHAN))
         self.socket.settimeout(TIMEOUTTIME)
     def whileSection(self):
-        try:
-            readbuffer = self.socket.recv(1024)
-        except:
-            readbuffer = ""
-        temp = string.split(readbuffer, "\n")
-        for line in temp:
+        while True:
             try:
-                line = string.rstrip(line)
-                line = string.split(line)
-                if(line[0] == "PING"):
-                    self.socket.send("PONG %s\r\n" % line[1])
-                    print "Pinged and ponged"
-                print ' '.join(line)  # putting this at end of try;except clause because it crashes on empty lines
+                self.readbuffer = self.socket.recv(1024)
             except:
-                pass
+                self.readbuffer = ""
+            self.temp = string.split(self.readbuffer, "\n")
+            for line in self.temp:
+                try:
+                    line = string.rstrip(line)
+                    line = string.split(line)
+                    if(line[0] == "PING"):
+                        self.socket.send("PONG %s\r\n" % line[1])
+                        print "Pinged and ponged"
+                    print ' '.join(line)  # putting this at end of try;except clause because it crashes on empty lines
+                except:
+                    pass
 
 IrcC = Irc()
 IrcC.connect()
-while True:
-    IrcC.whileSection()
+IrcC.whileSection()
 
 
