@@ -1,9 +1,8 @@
-import sys, socket, random, string, time
+import sys, socket, random, string, time, ConfigPraser
 from time import gmtime, strftime
-
-global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE
+global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, counter, TrueMaster
 execfile("configirc.ini")
-
+counter = 0
 def print_date(msg):
     print strftime("[*] [%H:%M:%S] "+msg, gmtime())
 class Irc:
@@ -23,7 +22,7 @@ class Irc:
         self.send("JOIN %s" % (CHAN))
         self.socket.settimeout(TIMEOUTTIME)
         time.sleep(2)
-        self.send("PRIVMSG #polish :hiii")
+        self.send("PRIVMSG #polish :Joined. Hi.")
     def whileSection(self):
         while True:
             try:
@@ -57,3 +56,4 @@ class Irc:
 IrcC = Irc()
 IrcC.connect()
 IrcC.whileSection()
+sys.exit()
