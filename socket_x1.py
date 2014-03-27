@@ -1,10 +1,25 @@
-import sys, socket, random, string, time, ConfigPraser
+import sys, socket, random, string, time, ConfigParser
 from time import gmtime, strftime
 global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, counter, TrueMaster
 execfile("configirc.ini")
 counter = 0
 def print_date(msg):
     print strftime("[*] [%H:%M:%S] "+msg, gmtime())
+'''def config_fetch():
+    global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, TrueMaster
+    config = ConfigParser.ConfigParser()
+    config.read('configirc.ini')
+    HOST = config.get('Server', 'Host')
+    PORT = config.get('Server', 'Port')
+    CHAN = config.get('Server', 'Channel')
+    NICK = config.get('Nick', 'Nick')
+    IDENT = config.get('Nick', 'Ident')
+    REALNAME = config.get('Nick', 'Realname')
+    TIMEOUTTIME = config.get('Bot', 'TimeoutTime')
+    PING = config.get('Bot', 'ShowPing')
+    PLUGINFILE = config.get('Bot', 'PluginFile')
+    MASTERS = config.get('Bot', 'Masters')
+    TrueMaster = config.get('Bot', 'TrueMaster')'''
 class Irc:
     def __init__(self):
         self.onChannelMsg = 'Sup cunts.'
@@ -15,6 +30,7 @@ class Irc:
         self.socket.send('PRIVMSG '+chan+' :'+msg+'\r\n')
         print_date('[%s] to <%s>: %s' % (NICK, chan, msg))      
     def connect(self):
+        #config_fetch()# just couldn't get it to work
         self.socket.connect((HOST, PORT))
         self.send("NICK %s" % NICK)
         self.send("USER %s %s bla :%s" % (IDENT, HOST, REALNAME))
@@ -52,7 +68,6 @@ class Irc:
                         print ' '.join(line)
                 except IndexError:
                     pass
-
 IrcC = Irc()
 IrcC.connect()
 IrcC.whileSection()
