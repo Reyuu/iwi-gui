@@ -1,41 +1,58 @@
 import sys, socket, random, string, time
+from time import gmtime, strftime
+
 global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING
 execfile("configirc.ini")
+
+def print_date(msg):
+    print strftime("[*] [%H:%M:%S] "+msg, gmtime())
 class Irc:
     def __init__(self):
-        self.readbuffer = ""
-        self.onChannelMsg = 'PRIVMSG %s :' % (CHAN)
+        self.onChannelMsg = 'Sup cunts.'
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    def send(self, msg):
+        self.socket.send(msg + "\r\n")
+    def sendMsg(self, chan, msg):
+        self.socket.send('PRIVMSG '+chan+' :'+msg+'\r\n')
+        print_date('[%s] to <%s>: %s' % (NICK, chan, msg))      
     def connect(self):
         self.socket.connect((HOST, PORT))
-        self.socket.send("NICK %s\r\n" % NICK)
-        self.socket.send("USER %s %s bla :%s\r\n" % (IDENT, HOST, REALNAME))
+        self.send("NICK %s" % NICK)
+        self.send("USER %s %s bla :%s" % (IDENT, HOST, REALNAME))
         time.sleep(5)
-        self.socket.send("JOIN %s\r\n" % (CHAN))
+        self.send("JOIN %s" % (CHAN))
         self.socket.settimeout(TIMEOUTTIME)
+        time.sleep(2)
+        self.send("PRIVMSG #polish :hiii")
     def whileSection(self):
         while True:
             try:
-                self.readbuffer = self.socket.recv(1024)
+                readbuffer = self.socket.recv(1024)
             except:
-                self.readbuffer = ""
-            self.temp = string.split(self.readbuffer, "\n")
-            for self.line in self.temp:
+                readbuffer = ""
+            temp = string.split(readbuffer, "\n")
+            for line in temp:
                 try:
-                    self.line = string.rstrip(self.line)
-                    self.line = string.split(self.line)
-                    if(self.line[0] == "PING"):
-                        self.socket.send("PONG %s\r\n" % self.line[1])
-                        if(PING == 1):
-                            print "Pinged and ponged"
+                    if not line:
+                        break
+                    line = string.rstrip(line)
+                    line = string.split(line)
+                    if line[0] == "PING":
+                        self.send("PONG %s" % line[1])
+                        if PING:
+                            print_date("Pinged and ponged.")
                         else:
                             pass
-                    print ' '.join(self.line)  # putting this at end of try;except clause because it crashes on empty lines
-                except:
+                    elif line[1] == "PRIVMSG":
+                        channel = line[2]
+                        message = (' '.join(line[3:]))[1:]
+                        username = (line[0].split('!')[0])[1:] 
+                        print_date("[%s] to <%s>: %s" % (username, channel, message))
+                    else:
+                        print ' '.join(line)
+                except IndexError:
                     pass
 
 IrcC = Irc()
 IrcC.connect()
 IrcC.whileSection()
-
-
