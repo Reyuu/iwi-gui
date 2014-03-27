@@ -1,7 +1,7 @@
 import sys, socket, random, string, time
 from time import gmtime, strftime
 
-global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING
+global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE
 execfile("configirc.ini")
 
 def print_date(msg):
@@ -48,6 +48,7 @@ class Irc:
                         message = (' '.join(line[3:]))[1:]
                         username = (line[0].split('!')[0])[1:] 
                         print_date("[%s] to <%s>: %s" % (username, channel, message))
+                        execfile(PLUGINFILE)
                     else:
                         print ' '.join(line)
                 except IndexError:
