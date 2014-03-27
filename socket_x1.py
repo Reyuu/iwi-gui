@@ -1,5 +1,5 @@
 import sys, socket, random, string, time
-global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME
+global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING
 execfile("configirc.ini")
 class Irc:
     def __init__(self):
@@ -20,14 +20,17 @@ class Irc:
             except:
                 self.readbuffer = ""
             self.temp = string.split(self.readbuffer, "\n")
-            for line in self.temp:
+            for self.line in self.temp:
                 try:
-                    line = string.rstrip(line)
-                    line = string.split(line)
-                    if(line[0] == "PING"):
-                        self.socket.send("PONG %s\r\n" % line[1])
-                        print "Pinged and ponged"
-                    print ' '.join(line)  # putting this at end of try;except clause because it crashes on empty lines
+                    self.line = string.rstrip(self.line)
+                    self.line = string.split(self.line)
+                    if(self.line[0] == "PING"):
+                        self.socket.send("PONG %s\r\n" % self.line[1])
+                        if(PING == 1):
+                            print "Pinged and ponged"
+                        else:
+                            pass
+                    print ' '.join(self.line)  # putting this at end of try;except clause because it crashes on empty lines
                 except:
                     pass
 
