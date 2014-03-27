@@ -8,41 +8,71 @@ if message[0] == '!':
     argMsg = (message.split(' ')[1:])
     argMsg2 = (message.split(' ')[1])
 
-    if(commandMsg == "!test" and username in MASTERS):
-        self.sendMsg(CHAN, "testing")
+    if(commandMsg == "!test" and argMsg == "" and username in MASTERS):
+        x = 1
+        self.send("PRIVMSG "+CHAN+" :testing")
+    else:
+        pass
 
-    elif(commandMsg == "!roll" and argMsg2 == "big" and username in MASTERS):
+    if(commandMsg == "!help" and argMsg2 == "all" and username in MASTERS):
+        x1 = "-----------------Actuall commands:--------------------|"
+        x2 = "--roll big - rolls a big integer----------------------|"
+        x3 = "--roll small - rolls small integer--------------------|"
+        x4 = "--kick <nick> - kicks <nick>--------------------------|"
+        x5 = "--mode <mode> <nick> - gives <mode> to nick (only op)-|"
+        x6 = "--say <something> - bot says <something>--------------|"
+        x7 = "--losuj <1stitem>, <2nditem>... - returns random item-|"
+        self.sendMsg(CHAN, x1)
+        self.sendMsg(CHAN, x2)
+        self.sendMsg(CHAN, x3)
+        self.sendMsg(CHAN, x4)
+        self.sendMsg(CHAN, x5)
+        self.sendMsg(CHAN, x6)
+        self.sendMsg(CHAN, x7)
+    else:
+        pass
+
+    if(commandMsg == "!roll" and argMsg2 == "big" and username in MASTERS):
         x1 = int(strftime("%S", gmtime()))
         x2 = int(strftime("%Y", gmtime()))
         x = random.randint(1, x1*x2)
-        self.sendMsg(CHAN, "Rolled "+str(x))
+        self.sendMsg(CHAN, username+" rolled "+str(x))
+    else:
+        pass
 
-    elif(commandMsg == "!roll" and argMsg2 == "small" and username in MASTERS):
+    if(commandMsg == "!roll" and argMsg2 == "small" and username in MASTERS):
         x1 = int(strftime("%S", gmtime()))
         x = random.randint(1, x1)
-        self.sendMsg(CHAN, "Rolled "+str(x))
+        self.sendMsg(CHAN, username+" rolled "+str(x))
+    else:
+        pass
 
-    elif(commandMsg == "!kick" or commandMsg == "!kill" and username in MASTERS):
+    if(commandMsg == "!kick" or commandMsg == "!kill" and username in MASTERS):
         sayMsg = ' '.join(argMsg)
         self.send("KICK "+CHAN+" "+sayMsg)
+    else:
+        pass
 
-    elif(commandMsg == "!mode" and username == TrueMaster):
-        self.send("MODE "+CHAN+" "+argMsg)
+    if(commandMsg == "!mode" and username == TrueMaster):
+        sayMsg = ' '.join(argMsg)
+        self.send("MODE "+CHAN+" "+sayMsg)
+    else:
+        pass
 
-    elif(commandMsg == "!say" and username in MASTERS):
+    if(commandMsg == "!say" and username in MASTERS):
         sayMsg = ' '.join(argMsg)
         self.sendMsg(CHAN, sayMsg)
+    else:
+        pass
 
-    elif(commandMsg == "!losujhelp"):
-        self.sendMsg(CHAN, "Usage !losuj <1stitem>, <2nditem>...")
-        self.sendMsg(CHAN, "Do not put space at end of the !losuj")
-
-    elif(commandMsg == "!losuj"):
+    if(commandMsg == "!losuj"):
         sayMsg = ' '.join(argMsg)
         y = random.choice(sayMsg.split(','))
         self.sendMsg(CHAN, y)
+    else:
+        pass
 
-    elif(commandMsg == "!exec" and username == TrueMaster):
+    if(commandMsg == "!exec" and username == TrueMaster):
         sayMsg = ' '.join(argMsg)
         if sayMsg == "sys.exit()":
             self.sendMsg(CHAN, "Bye")
