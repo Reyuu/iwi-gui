@@ -4,13 +4,11 @@ from socket_x1 import *
 global IrcC
 IrcC = Irc()
 
-
 class IrcThread (threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
 
     def run(self):
-        IrcC.fetchSettings()
         IrcC.connect()
         IrcC.whileSection()
 

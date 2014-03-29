@@ -6,6 +6,33 @@ global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, M
 
 BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE = range(8)
 counter = 0
+def fetchSettings():
+    config = ConfigParser.ConfigParser()
+    config.read('configirc.ini')
+    try:
+        global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, counter, TrueMaster, NoticeMsgOnChannelJoin, NoticeMsgOnChannelJoinOn, HighLight
+        HOST = config.get('Server', 'Server')
+        PORT = int(config.get('Server', 'Port'))
+        CHAN = config.get('Server', 'Channel')
+
+        NICK = config.get('Bot', 'Nick')
+        IDENT = config.get('Bot', 'Ident')
+        REALNAME = config.get('Bot', 'RealName')
+
+        NoticeMsgOnChannelJoin = config.get('Messages', 'WelcomeMsg')
+        NoticeMsgOnChannelJoinOn = config.get('Messages', 'WelcomeMsgActive')
+        PING = config.get('Messages', 'OutputPing')
+        HighLight = config.get('Messages', 'HighlightPhrases').split(',')
+
+        TIMEOUTTIME = float(config.get('Settings', 'SocketDelay'))
+        PLUGINFILE = config.get('Settings', 'PluginFile')
+        TrueMaster = config.get('Settings', 'BotOwner')
+        MASTERS = config.get('Settings', 'Masters').replace(' ', '').split(',')
+
+
+    except:
+            print "[!] Error have happened while fetching settings from configirc.ini!"
+            sys.exit(1)
 def has_colours(stream):
     if not hasattr(stream, "isatty"):
         return False
@@ -42,33 +69,7 @@ class Irc:
     def sendMsg(self, chan, msg):
         self.socket.send('PRIVMSG '+chan+' :'+msg+'\r\n')
         print_date('[%s] to <%s>: %s' % (NICK, chan, msg), colour=GREEN)
-    def fetchSettings(self):
-        config = ConfigParser.ConfigParser()
-        config.read('configirc.ini')
-        try:
-            global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, counter, TrueMaster, NoticeMsgOnChannelJoin, NoticeMsgOnChannelJoinOn, HighLight
-            HOST = config.get('Server', 'Server')
-            PORT = int(config.get('Server', 'Port'))
-            CHAN = config.get('Server', 'Channel')
 
-            NICK = config.get('Bot', 'Nick')
-            IDENT = config.get('Bot', 'Ident')
-            REALNAME = config.get('Bot', 'RealName')
-
-            NoticeMsgOnChannelJoin = config.get('Messages', 'WelcomeMsg')
-            NoticeMsgOnChannelJoinOn = config.get('Messages', 'WelcomeMsgActive')
-            PING = config.get('Messages', 'OutputPing')
-            HighLight = config.get('Messages', 'HighlightPhrases').split(',')
-
-            TIMEOUTTIME = float(config.get('Settings', 'SocketDelay'))
-            PLUGINFILE = config.get('Settings', 'PluginFile')
-            TrueMaster = config.get('Settings', 'BotOwner')
-            MASTERS = config.get('Settings', 'Masters').replace(' ', '').split(',')
-
-
-        except:
-            print "[!] Error have happened while fetching settings from configirc.ini!"
-            sys.exit(1)
     def connect(self):
         #config_fetch()# just couldn't get it to work
         #logging section
@@ -122,3 +123,7 @@ class Irc:
                         print ' '.join(line)
                 except IndexError:
                     pass
+
+fetchSettings()
+
+
