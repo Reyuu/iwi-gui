@@ -21,13 +21,6 @@ def has_colours(stream):
         return False
 has_colours = has_colours(sys.stdout)
 
-def printout(text, colour=WHITE):
-        if has_colours:
-            seq = "\x1b[1;%dm" % (30+colour) + text + "\x1b[0m"
-            sys.stdout.write(seq)
-        else:
-            sys.stdout.write(text)
-
 def print_date(msg, colour=YELLOW):
     if has_colours:
         seq = "\x1b[1;%dm" % (30+colour) + strftime("[*] [%H:%M:%S] ",gmtime()) + "\x1b[0m"
@@ -43,7 +36,7 @@ class Irc:
         self.socket.send(msg + "\r\n")
     def sendMsg(self, chan, msg):
         self.socket.send('PRIVMSG '+chan+' :'+msg+'\r\n')
-        print_date('[%s] to <%s>: %s' % (NICK, chan, msg))      
+        print_date('[%s] to <%s>: %s' % (NICK, chan, msg), colour=GREEN)      
     def connect(self):
         #config_fetch()# just couldn't get it to work
         #logging section
@@ -86,7 +79,8 @@ class Irc:
                         channel = line[2]
                         message = (' '.join(line[3:]))[1:]
                         username = (line[0].split('!')[0])[1:] 
-                        print_date("[%s] to <%s>: %s" % (username, channel, message))
+                        colour = {0:YELLOW, 1:RED}[(TrueMaster in message) or (channel == TrueMaster)]
+                        print_date("[%s] to <%s>: %s" % (username, channel, message), colour=colour)
                         execfile(PLUGINFILE)
                     elif line[1] == "JOIN" and NoticeMsgOnChannelJoinOn == 1:
                         username = (line[0].split('!')[0])[1:]
