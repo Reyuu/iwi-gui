@@ -1,4 +1,5 @@
-import sys, threading
+import sys
+import threading
 from socket_x1 import *
 global IrcC
 IrcC = Irc()
@@ -7,27 +8,32 @@ IrcC = Irc()
 class IrcThread (threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
+
     def run(self):
         IrcC.connect()
         IrcC.whileSection()
+
+
 class InputThreadIrc (threading.Thread):
     def __init__(self):
         threading.Thread.__init__(self)
-    def run(self):        
+
+    def run(self):
         while 1:
             try:
-                line = sys.stdin.readline()
+                self.line2 = sys.stdin.readline()
             except KeyboardInterrupt:
                 break
 
-            if(line == "QUIT"):
+            if(self.line2 == "QUIT"):
                 sys.exit()
 
-            elif not line:
+            elif not self.line2:
                 break
 
             else:
-                IrcC.sendMsg(CHAN, line)
+                IrcC.logger.info(" ["+NICK+"] "+self.line2+" to "+CHAN+":")
+                IrcC.sendMsg(CHAN, self.line2)
 
 thread1 = IrcThread()
 thread2 = InputThreadIrc()
