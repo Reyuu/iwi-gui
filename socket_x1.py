@@ -50,6 +50,7 @@ has_colours = has_colours(sys.stdout)
 def multi_detect(string, inputArray):
     for item in inputArray:
         if item in string:
+            print '\a'
             return 1
     return 0
 
