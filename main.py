@@ -21,6 +21,7 @@ class InputThreadIrc (threading.Thread):
         threading.Thread.__init__(self)
         socket_x1.fetchSettings()
         self.lastMessage = [CHAN, '']
+        self.messages = {}
         
     def run(self):
         global CHAN
@@ -52,11 +53,18 @@ class InputThreadIrc (threading.Thread):
                 elif command == 'j': # join to a channel
                     execute = False
                     IrcC.send('JOIN '+inputArray[1])
-                elif command == 'ch':
+                elif command == 'ch': # changes channel
                     socket_x1.CHAN = inputArray[1]
                     CHAN = inputArray[1]
                     execute = False
-
+                elif command == 'ms': # sets a message to reuse
+                    self.messages[inputArray[1]] = ' '.join(inputArray[2:])
+                    execute = False
+                elif command == 'md':
+                    if inputArray[1] in self.messages:
+                        self.line2 = self.messages[inputArray[1]]
+                    else:
+                        execute = False
             if execute:
                 IrcC.logger.info(" ["+NICK+"] "+self.line2+" to "+specialChan+":")
                 IrcC.sendMsg(specialChan, self.line2)

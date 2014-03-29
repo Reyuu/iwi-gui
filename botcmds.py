@@ -19,15 +19,8 @@ if message[0] == '!':
         x7 = "|!losuj <1stitem>, <2nditem>... - returns random item-|"
         x8 = "|!quit now - shutdown bot-----------------------------|"
         x9 = "If command has only one word, remember to add \"null\" at the end!"
-        self.sendMsg(CHAN, x1)
-        self.sendMsg(CHAN, x2)
-        self.sendMsg(CHAN, x3)
-        self.sendMsg(CHAN, x4)
-        self.sendMsg(CHAN, x5)
-        self.sendMsg(CHAN, x6)
-        self.sendMsg(CHAN, x7)
-        self.sendMsg(CHAN, x8)
-        self.sendMsg(CHAN, x9)
+        for item in (x1, x2, x3, x4, x5, x6, x7, x8, x9):
+            self.sendMsg(CHAN, item)
     else:
         pass
 
