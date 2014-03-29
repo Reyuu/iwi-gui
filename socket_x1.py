@@ -3,7 +3,7 @@
 import sys, socket, random, string, time, logging, threading
 from time import gmtime, strftime
 execfile("configirc.ini")
-global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, counter, TrueMaster, NoticeMsgOnChannelJoin, NoticeMsgOnChannelJoinOn
+global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, counter, TrueMaster, NoticeMsgOnChannelJoin, NoticeMsgOnChannelJoinOn, HighLight
 
 BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE = range(8)
 counter = 0
@@ -20,6 +20,12 @@ def has_colours(stream):
         # guess false in case of error
         return False
 has_colours = has_colours(sys.stdout)
+
+def multi_detect(string, inputArray):
+    for item in inputArray:
+        if item in string:
+            return 1
+    return 0
 
 def print_date(msg, colour=YELLOW):
     if has_colours:
@@ -78,8 +84,9 @@ class Irc:
                     elif line[1] == "PRIVMSG":
                         channel = line[2]
                         message = (' '.join(line[3:]))[1:]
-                        username = (line[0].split('!')[0])[1:] 
-                        colour = {0:YELLOW, 1:RED}[(TrueMaster in message) or (channel == TrueMaster)]
+                        username = (line[0].split('!')[0])[1:]
+                        hld = multi_detect(message, HighLight)
+                        colour = {0:YELLOW, 1:RED}[(hld == True) or (channel == TrueMaster)]
                         print_date("[%s] to <%s>: %s" % (username, channel, message), colour=colour)
                         execfile(PLUGINFILE)
                     elif line[1] == "JOIN" and NoticeMsgOnChannelJoinOn == 1:
