@@ -10,6 +10,7 @@ class IrcThread (threading.Thread):
         threading.Thread.__init__(self)
 
     def run(self):
+        IrcC.fetchSettings()
         IrcC.connect()
         IrcC.whileSection()
 
