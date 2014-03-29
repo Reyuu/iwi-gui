@@ -65,6 +65,8 @@ if message[0] == '!':
         pass
 
     if(commandMsg == "!quit" and argMsg2 == "now" and username in MASTERS):
+        self.sendMsg(CHAN, "Bye")
+        import os
         os._exit(1)
     else:
         pass
@@ -76,8 +78,16 @@ if message[0] == '!':
 
     if(commandMsg == "!losuj"):
         sayMsg = ' '.join(argMsg)
-        y = random.choice(sayMsg.split(','))
+        y = random.choice(sayMsg.split(', '))
         self.sendMsg(CHAN, y)
+    else:
+        pass
+
+    if(commandMsg == "!vs"):
+        sayMsg = ' '.join(argMsg)
+        y = random.choice(sayMsg.split(' vs '))
+        yu = y[0].upper()+y[1:]
+        self.sendMsg(CHAN, yu+" is better!")
     else:
         pass
 
@@ -88,11 +98,6 @@ if message[0] == '!':
 
     if (commandMsg == "!exec" and username is TrueMaster):
         sayMsg = ' '.join(argMsg)
-        if sayMsg == "os._exit(1)":
-            self.sendMsg(CHAN, "Bye")
-            pass
-        else:
-            pass
         exec(sayMsg)
     else:
         pass
