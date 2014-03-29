@@ -37,6 +37,7 @@ class InputThreadIrc (threading.Thread):
 
 thread1 = IrcThread()
 thread2 = InputThreadIrc()
+thread2.daemon = 1
 
 thread1.start()
 thread2.start()

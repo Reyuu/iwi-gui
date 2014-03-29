@@ -52,7 +52,7 @@ if message[0] == '!':
     else:
         pass
 
-    if(commandMsg == "!mode" and username == TrueMaster):
+    if(commandMsg == "!mode" and username is TrueMaster):
         sayMsg = ' '.join(argMsg)
         self.send("MODE "+CHAN+" "+sayMsg)
     else:
@@ -65,7 +65,7 @@ if message[0] == '!':
         pass
 
     if(commandMsg == "!quit" and argMsg2 == "now" and username in MASTERS):
-        sys.exit()
+        os._exit(1)
     else:
         pass
 
@@ -86,9 +86,9 @@ if message[0] == '!':
     else:
         pass'''
 
-    if(commandMsg == "!exec" and username == TrueMaster):
+    if (commandMsg == "!exec" and username is TrueMaster):
         sayMsg = ' '.join(argMsg)
-        if sayMsg == "sys.exit()":
+        if sayMsg == "os._exit(1)":
             self.sendMsg(CHAN, "Bye")
             pass
         else:
