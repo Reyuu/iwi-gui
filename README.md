@@ -13,3 +13,5 @@ Commands:
 :r input - sends raw messages to server, for ex PRIVMSG #channel :message    
 :ms id message - definies a message to use later    
 :md id - sends the specified message    
+:vs variable text - definied a variable to use later [without $ before variable]    
+:v text - sends text, but with variables replaced to their values [with $ before variables]    

@@ -22,7 +22,8 @@ class InputThreadIrc (threading.Thread):
         socket_x1.fetchSettings()
         self.lastMessage = [CHAN, '']
         self.messages = {}
-        
+        self.variables = {}
+
     def run(self):
         global CHAN
         while 1:
@@ -60,11 +61,25 @@ class InputThreadIrc (threading.Thread):
                 elif command == 'ms': # sets a message to reuse
                     self.messages[inputArray[1]] = ' '.join(inputArray[2:])
                     execute = False
-                elif command == 'md':
+                elif command == 'md': # displays a message
                     if inputArray[1] in self.messages:
                         self.line2 = self.messages[inputArray[1]]
                     else:
                         execute = False
+                elif command == 'vs': # sets a variable
+                    self.variables[inputArray[1]] = ' '.join(inputArray[2:])
+                    execute = False
+                elif command == 'v': # sends a message with variables
+                    words = inputArray[1:]
+                    new_msg = ''
+                    for word in words:
+                        if word[0] == '$':
+                            if word[1:] in self.variables:
+                                new_msg += self.variables[word[1:]]
+                        else:
+                            new_msg += word
+                        new_msg += ' '
+                    self.line2 = new_msg
             if execute:
                 IrcC.logger.info(" ["+NICK+"] "+self.line2+" to "+specialChan+":")
                 IrcC.sendMsg(specialChan, self.line2)
