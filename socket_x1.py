@@ -2,11 +2,39 @@
 # -*- coding: utf-8 -*-
 import sys, socket, random, string, time, logging, threading
 from time import gmtime, strftime
-global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, counter, TrueMaster, NoticeMsgOnChannelJoin, NoticeMsgOnChannelJoinOn
 execfile("configirc.ini")
+global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, counter, TrueMaster, NoticeMsgOnChannelJoin, NoticeMsgOnChannelJoinOn
+
+BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE = range(8)
 counter = 0
-def print_date(msg):
-    print strftime("[*] [%H:%M:%S] "+msg, gmtime())
+def has_colours(stream):
+    if not hasattr(stream, "isatty"):
+        return False
+    if not stream.isatty():
+        return False # auto color only on TTYs
+    try:
+        import curses
+        curses.setupterm()
+        return curses.tigetnum("colors") > 2
+    except:
+        # guess false in case of error
+        return False
+has_colours = has_colours(sys.stdout)
+
+def printout(text, colour=WHITE):
+        if has_colours:
+            seq = "\x1b[1;%dm" % (30+colour) + text + "\x1b[0m"
+            sys.stdout.write(seq)
+        else:
+            sys.stdout.write(text)
+
+def print_date(msg, colour=YELLOW):
+    if has_colours:
+        seq = "\x1b[1;%dm" % (30+colour) + strftime("[*] [%H:%M:%S] ",gmtime()) + "\x1b[0m"
+        print seq+msg
+    else:
+        print strftime("[*] [%H:%M:%S] "+msg, gmtime()) 
+
 class Irc:
     def __init__(self):
         self.onChannelMsg = 'Sup cunts.'
