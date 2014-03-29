@@ -1,25 +1,12 @@
-import sys, socket, random, string, time, ConfigParser
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+import sys, socket, random, string, time, logging, threading
 from time import gmtime, strftime
-global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, counter, TrueMaster
+global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, counter, TrueMaster, NoticeMsgOnChannelJoin, NoticeMsgOnChannelJoinOn
 execfile("configirc.ini")
 counter = 0
 def print_date(msg):
     print strftime("[*] [%H:%M:%S] "+msg, gmtime())
-'''def config_fetch():
-    global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, TrueMaster
-    config = ConfigParser.ConfigParser()
-    config.read('configirc.ini')
-    HOST = config.get('Server', 'Host')
-    PORT = config.get('Server', 'Port')
-    CHAN = config.get('Server', 'Channel')
-    NICK = config.get('Nick', 'Nick')
-    IDENT = config.get('Nick', 'Ident')
-    REALNAME = config.get('Nick', 'Realname')
-    TIMEOUTTIME = config.get('Bot', 'TimeoutTime')
-    PING = config.get('Bot', 'ShowPing')
-    PLUGINFILE = config.get('Bot', 'PluginFile')
-    MASTERS = config.get('Bot', 'Masters')
-    TrueMaster = config.get('Bot', 'TrueMaster')'''
 class Irc:
     def __init__(self):
         self.onChannelMsg = 'Sup cunts.'
@@ -31,6 +18,14 @@ class Irc:
         print_date('[%s] to <%s>: %s' % (NICK, chan, msg))      
     def connect(self):
         #config_fetch()# just couldn't get it to work
+        #logging section
+        self.logger = logging.getLogger('myapp')
+        self.hdlr = logging.FileHandler('socket.log')
+        self.formatter = logging.Formatter('[*] [%(asctime)s] %(message)s', datefmt='%H:%M:%S')
+        self.hdlr.setFormatter(self.formatter)
+        self.logger.addHandler(self.hdlr) 
+        self.logger.setLevel(logging.INFO)
+
         self.socket.connect((HOST, PORT))
         self.send("NICK %s" % NICK)
         self.send("USER %s %s bla :%s" % (IDENT, HOST, REALNAME))
@@ -51,6 +46,7 @@ class Irc:
                     if not line:
                         break
                     line = string.rstrip(line)
+                    self.logger.info(str(line))
                     line = string.split(line)
                     if line[0] == "PING":
                         self.send("PONG %s" % line[1])
@@ -64,11 +60,10 @@ class Irc:
                         username = (line[0].split('!')[0])[1:] 
                         print_date("[%s] to <%s>: %s" % (username, channel, message))
                         execfile(PLUGINFILE)
+                    elif line[1] == "JOIN" and NoticeMsgOnChannelJoinOn == 1:
+                        username = (line[0].split('!')[0])[1:]
+                        self.send("NOTICE "+username+" :"+NoticeMsgOnChannelJoin)
                     else:
                         print ' '.join(line)
                 except IndexError:
                     pass
-IrcC = Irc()
-IrcC.connect()
-IrcC.whileSection()
-sys.exit()
