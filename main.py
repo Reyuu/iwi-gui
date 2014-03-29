@@ -32,6 +32,8 @@ class InputThreadIrc (threading.Thread):
             except KeyboardInterrupt:
                 break
             execute, specialChan = True, CHAN
+            self.variables['hl'] = IrcC.lastHL
+            self.variables['lm'] = self.lastMessage[1]
             if self.line2[0] == ':':
                 inputArray = self.line2.replace('\n', '').split(' ')
                 command = inputArray[0]
@@ -74,8 +76,14 @@ class InputThreadIrc (threading.Thread):
                     new_msg = ''
                     for word in words:
                         if word[0] == '$':
-                            if word[1:] in self.variables:
-                                new_msg += self.variables[word[1:]]
+                            wording = word[1:].replace(',', '')
+                            wording = wording.replace(':', '')
+                            if wording in self.variables:
+                                new_msg += self.variables[wording]
+                            if word[-1] == ',':
+                                new_msg += ','
+                            elif word[-1] == ':':
+                                new_msg += ':'
                         else:
                             new_msg += word
                         new_msg += ' '

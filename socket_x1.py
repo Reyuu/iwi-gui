@@ -65,11 +65,12 @@ class Irc:
     def __init__(self):
         self.onChannelMsg = 'Sup cunts.'
         self.socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+        self.lastHL = 'Null'
     def send(self, msg):
         self.socket.send(msg + "\r\n")
     def sendMsg(self, chan, msg):
         self.socket.send('PRIVMSG '+chan+' :'+msg+'\r\n')
-        print_date('[%s] to <%s>: %s' % (NICK, chan, msg), colour=GREEN)
+        print_date('[%s] to <%s>: %s' % (NICK, chan, msg), colour=BLUE)
 
     def connect(self):
         #config_fetch()# just couldn't get it to work
@@ -114,6 +115,8 @@ class Irc:
                         message = (' '.join(line[3:]))[1:]
                         username = (line[0].split('!')[0])[1:]
                         hld = multi_detect(message, HighLight)
+                        if hld:
+                            self.lastHL = username
                         colour = {0:YELLOW, 1:RED}[(hld == True) or (channel == TrueMaster)]
                         print_date("[%s] to <%s>: %s" % (username, channel, message), colour=colour)
                         execfile(PLUGINFILE)
