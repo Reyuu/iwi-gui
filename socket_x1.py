@@ -104,7 +104,6 @@ class Irc:
                     line = string.rstrip(line)
                     self.logger.info(str(line))
                     line = string.split(line)
-                    print line[1]
                     if line[0] == "PING":
                         self.send("PONG %s" % line[1])
                         if PING:
