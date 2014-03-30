@@ -104,13 +104,14 @@ class Irc:
                     line = string.rstrip(line)
                     self.logger.info(str(line))
                     line = string.split(line)
+                    print line[1]
                     if line[0] == "PING":
                         self.send("PONG %s" % line[1])
                         if PING:
-                            print_date("Pinged and ponged.")
+                            print_date("Pinged and ponged.", colour=CYAN)
                         else:
                             pass
-                    elif line[1] == "PRIVMSG":
+                    if line[1] == "PRIVMSG":
                         channel = line[2]
                         message = (' '.join(line[3:]))[1:]
                         username = (line[0].split('!')[0])[1:]
@@ -120,9 +121,18 @@ class Irc:
                         colour = {0:YELLOW, 1:RED}[(hld == True) or (channel == TrueMaster)]
                         print_date("[%s] to <%s>: %s" % (username, channel, message), colour=colour)
                         execfile(PLUGINFILE)
-                    elif line[1] == "JOIN" and NoticeMsgOnChannelJoinOn == 1:
+                    elif line[1] == "JOIN":
                         username = (line[0].split('!')[0])[1:]
-                        self.send("NOTICE "+username+" :"+NoticeMsgOnChannelJoin)
+                        if NoticeMsgOnChannelJoinOn == 1:
+                            self.send("NOTICE "+username+" :"+NoticeMsgOnChannelJoin)
+                        print_date("[%s] joined the channel <%s>" % (username, ' '.join(line[2:])[1:]), colour=MAGENTA)
+                    elif line[1] == "QUIT":
+                        username = (line[0].split('!')[0])[1:]
+                        print_date("[%s] has quit: %s" % (username, ' '.join(line[2:])[1:]), colour=MAGENTA)
+                    elif line[1] == "PART":
+                        username = (line[0].split('!')[0])[1:]
+                        channel = line[2]
+                        print_date("[%s] leaves from <%s>" % (username, channel), colour=MAGENTA)
                     else:
                         print ' '.join(line)
                 except IndexError:
