@@ -1,9 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
-import sys, socket, random, string, time, logging, threading, ConfigParser
+import sys, socket, random, string, time, logging, threading, ConfigParser, os
 from time import gmtime, strftime
 global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, counter, TrueMaster, NoticeMsgOnChannelJoin, NoticeMsgOnChannelJoinOn, HighLight
-global SELFCOLOR, PINGCOLOR, NORMALCOLOR, HIGHLIGHTCOLOR, JOINCOLOR, QUITCHANCOLOR, QUITSERVCOLOR, PASSWORD, QUITMSGON, JOINMSGON, USERSLIST, MOTDCOLOR
+global SELFCOLOR, PINGCOLOR, NORMALCOLOR, HIGHLIGHTCOLOR, JOINCOLOR, QUITCHANCOLOR, QUITSERVCOLOR, PASSWORD, QUITMSGON, JOINMSGON, USERSLIST, MOTDCOLOR, NOTIFILE
 
 CHAN = '#polish'
 counter = 0
@@ -12,7 +12,7 @@ def fetchSettings():
     config.read('configirc.ini')
     try:
         global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, counter, TrueMaster, NoticeMsgOnChannelJoin, NoticeMsgOnChannelJoinOn, HighLight
-        global SELFCOLOR, PINGCOLOR, NORMALCOLOR, HIGHLIGHTCOLOR, JOINCOLOR, QUITCHANCOLOR, QUITSERVCOLOR, PASSWORD, QUITMSGON, JOINMSGON, USERSLIST, MOTDCOLOR
+        global SELFCOLOR, PINGCOLOR, NORMALCOLOR, HIGHLIGHTCOLOR, JOINCOLOR, QUITCHANCOLOR, QUITSERVCOLOR, PASSWORD, QUITMSGON, JOINMSGON, USERSLIST, MOTDCOLOR, NOTIFILE
 
         HOST = config.get('Server', 'Server')
         PORT = int(config.get('Server', 'Port'))
@@ -31,7 +31,7 @@ def fetchSettings():
         PLUGINFILE = config.get('Settings', 'PluginFile')
         TrueMaster = config.get('Settings', 'BotOwner')
         MASTERS = config.get('Settings', 'Masters').replace(' ', '').split(',')
-
+        
         SELFCOLOR = config.get('TextColors', 'SelfColor')
         PINGCOLOR = config.get('TextColors', 'PingColor')
         NORMALCOLOR = config.get('TextColors', 'NormalColor')
@@ -52,7 +52,10 @@ def fetchSettings():
         PASSWORD = config.get('Server', 'Password')
     except:
         PASSWORD = ''
-
+    try:
+        NOTIFILE = config.get('Settings', 'NotificationFile')
+    except:
+        NOTIFILE = ''
 has_colours = False
 def multi_detect(string, inputArray):
     for item in inputArray:
@@ -131,7 +134,11 @@ class Irc:
                         hld = multi_detect(message, HighLight)
                         if hld:
                             self.lastHL = username
-                        colour = {0:NORMALCOLOR, 1:HIGHLIGHTCOLOR}[(hld == True) or (channel == TrueMaster)]
+                        if hld or (channel == TrueMaster):
+                            if NOTIFILE and os.name is 'nt':
+                                import winsound
+                                winsound.PlaySound(NOTIFILE, winsound.SND_FILENAME|winsound.SND_ASYNC)
+                        colour = {0:NORMALCOLOR, 1:HIGHLIGHTCOLOR}[hld or (channel == TrueMaster)]
                         print_date(self, message, colour=colour, postfix="[%s] to <%s>: " % (username, channel), )
                         execfile(PLUGINFILE)
                     elif line[1] == "JOIN":
