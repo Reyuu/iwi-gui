@@ -137,7 +137,7 @@ IrcC.pointer = callback
 IrcC.tex = tex
 
 thread1 = IrcThread()
-
+thread1.daemon = True
 thread1.start()
 arial = ("Arial", "10")
 
