@@ -3,7 +3,7 @@
 import sys, socket, random, string, time, logging, threading, ConfigParser
 from time import gmtime, strftime
 global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, counter, TrueMaster, NoticeMsgOnChannelJoin, NoticeMsgOnChannelJoinOn, HighLight
-global SELFCOLOR, PINGCOLOR, NORMALCOLOR, HIGHLIGHTCOLOR, JOINCOLOR, QUITCHANCOLOR, QUITSERVCOLOR
+global SELFCOLOR, PINGCOLOR, NORMALCOLOR, HIGHLIGHTCOLOR, JOINCOLOR, QUITCHANCOLOR, QUITSERVCOLOR, PASSWORD, QUITMSGON, JOINMSGON
 
 CHAN = '#polish'
 counter = 0
@@ -12,7 +12,7 @@ def fetchSettings():
     config.read('configirc.ini')
     try:
         global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, counter, TrueMaster, NoticeMsgOnChannelJoin, NoticeMsgOnChannelJoinOn, HighLight
-        global SELFCOLOR, PINGCOLOR, NORMALCOLOR, HIGHLIGHTCOLOR, JOINCOLOR, QUITCHANCOLOR, QUITSERVCOLOR
+        global SELFCOLOR, PINGCOLOR, NORMALCOLOR, HIGHLIGHTCOLOR, JOINCOLOR, QUITCHANCOLOR, QUITSERVCOLOR, PASSWORD, QUITMSGON, JOINMSGON
 
         HOST = config.get('Server', 'Server')
         PORT = int(config.get('Server', 'Port'))
@@ -40,9 +40,16 @@ def fetchSettings():
         QUITCHANCOLOR = config.get('TextColors', 'QuitChannelColor')
         QUITSERVCOLOR = config.get('TextColors', 'QuitServerColor')
 
+        QUITMSGON = int(config.get('Visuals', 'QuitMessagesOn'))
+        JOINMSGON = int(config.get('Visuals', 'JoinMessagesOn'))
     except:
             print "[!] Error have happened while fetching settings from configirc.ini!"
             sys.exit(1)
+
+    try:
+        PASSWORD = config.get('Server', 'Password')
+    except:
+        PASSWORD = ''
 
 has_colours = False
 def multi_detect(string, inputArray):
@@ -83,6 +90,7 @@ class Irc:
             print_date(self, a, colour=SELFCOLOR,  postfix='[%s] to <%s>: ' % (NICK, chan))
 
     def connect(self):
+        global CHAN
         #config_fetch()# just couldn't get it to work
         #logging section
         self.logger = logging.getLogger('myapp')
@@ -93,13 +101,15 @@ class Irc:
         self.logger.setLevel(logging.INFO)
 
         self.socket.connect((HOST, PORT))
+        if PASSWORD:
+            self.send("PASS "+PASSWORD)
         self.send("NICK %s" % NICK)
         self.send("USER %s %s bla :%s" % (IDENT, HOST, REALNAME))
         time.sleep(5)
         self.send("JOIN %s" % (CHAN))
         self.socket.settimeout(TIMEOUTTIME)
         time.sleep(2)
-        self.send("PRIVMSG #polish :Joined. Hi.")
+        self.send("PRIVMSG "+CHAN+" :"+NoticeMsgOnChannelJoin)
     def whileSection(self):
         while True:
             try:
@@ -131,22 +141,23 @@ class Irc:
                         print_date(self, message, colour=colour, postfix="[%s] to <%s>: " % (username, channel), )
                         execfile(PLUGINFILE)
                     elif line[1] == "JOIN":
-                        username = (line[0].split('!')[0])[1:]
-                        if NoticeMsgOnChannelJoinOn == 1:
-                            self.send("NOTICE "+username+" :"+NoticeMsgOnChannelJoin)
-                        print_date(self, "", colour=JOINCOLOR, postfix="[%s] joined the channel <%s>" % (username, ' '.join(line[2:])[1:]), )
+                        if JOINMSGON:
+                            username = (line[0].split('!')[0])[1:]
+                            if NoticeMsgOnChannelJoinOn == 1:
+                                self.send("NOTICE "+username+" :"+NoticeMsgOnChannelJoin)
+                            print_date(self, "", colour=JOINCOLOR, postfix="[%s] joined the channel <%s>" % (username, ' '.join(line[2:])[1:]), )
                     elif line[1] == "QUIT":
-                        username = (line[0].split('!')[0])[1:]
-                        print_date(self, "", colour=QUITSERVCOLOR, postfix="[%s] has quit: %s" % (username, ' '.join(line[2:])[1:]), )
+                        if QUITMSGON:
+                            username = (line[0].split('!')[0])[1:]
+                            print_date(self, "", colour=QUITSERVCOLOR, postfix="[%s] has quit: %s" % (username, ' '.join(line[2:])[1:]), )
                     elif line[1] == "PART":
-                        username = (line[0].split('!')[0])[1:]
-                        channel = line[2]
-                        print_date(self, "", colour=QUITCHANCOLOR, postfix="[%s] leaves from <%s>" % (username, channel), )
+                        if QUITMSGON:
+                            username = (line[0].split('!')[0])[1:]
+                            channel = line[2]
+                            print_date(self, "", colour=QUITCHANCOLOR, postfix="[%s] leaves from <%s>" % (username, channel), )
                     else:
                         print ' '.join(line)
                 except IndexError:
                     pass
 
 fetchSettings()
-
-

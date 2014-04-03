@@ -1,8 +1,3 @@
-if counter == 0:
-    self.sendMsg(CHAN, "Loaded "+PLUGINFILE)
-    counter += 1
-else:
-    pass
 
 if message[0] == '!':
     commandMsg = (message.split(' ')[0])
