@@ -13,9 +13,25 @@ IrcC = socket_x1.Irc()
 def cbc(idd, tex):
     return lambda : callback(idd, tex)
 
-def callback(text, tex):
-    tex.insert(tk.END, str(text)+'\n')
-    tex.see(tk.END)             # Scroll if necessary
+def callback(text, tex, colour='', newline=True, colors={}):
+    tex.insert(tk.END, str(text)+{0:'',1:'\n'}[newline])
+    tex.see(tk.END) # Scroll if necessary
+    if colour:
+        highlight(tex, colour, colors)
+
+def highlight(tex, colour, colors):
+    idx = str(int(tex.index('end').split('.')[0]) - 1)+'.0'
+    idx2 = str(int(tex.index('end').split('.')[0]) - 1)+'.end'
+    tex.tag_add(colour, idx, idx2)
+    tex.tag_config("black", foreground=colors['black'])
+    tex.tag_config("red", foreground=colors['red'])
+    tex.tag_config("green", foreground=colors['green'])
+    tex.tag_config("yellow", foreground=colors['yellow'])
+    tex.tag_config("blue", foreground=colors['blue'])
+    tex.tag_config("magenta", foreground=colors['magenta'])
+    tex.tag_config("cyan", foreground=colors['cyan'])
+    tex.tag_config("white", foreground=colors['white'])
+
 
 def click(key):
     try:
@@ -96,15 +112,24 @@ class IrcThread (threading.Thread):
         IrcC.connect()
         IrcC.whileSection()
 
+config = ConfigParser.ConfigParser()
+config.read('configirc.ini')
+bgtex = config.get('TextColors', 'LogsBackground')
+fgtex = config.get('TextColors', 'LogsForeground')
 
+e1bg = config.get('TextColors', 'InputBackground')
+e1fg = config.get('TextColors', 'InputForeground')
+
+title = config.get('Settings', 'TitleWindow')
 arial = ("Arial", "10")
 
 top = tk.Tk()
-tex = tk.Text(master=top, width=80, height=23, font=arial, bg='#1c1d19', fg='#009a00')
+top.wm_title(title)
+tex = tk.Text(master=top, width=80, height=23, font=arial, bg=bgtex, fg=fgtex)
 tex.pack(side=tk.TOP)
 bop = tk.Frame()
 bop.pack(side=tk.BOTTOM)
-E1 = tk.Entry(bop, bd=3, width=80, font=arial, bg='#1c1d19', fg='#009a00')
+E1 = tk.Entry(bop, bd=3, width=80, font=arial, bg=e1bg, fg=e1fg)
 E1.bind("<Key>", click)
 E1.pack()
 

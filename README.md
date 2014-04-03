@@ -4,6 +4,8 @@ Working on sockets.
 
 Many thanks to maciej01.    
 
+Requires Tkinter for gui (pip install Tkinter)
+
 Commands:    
 :j channel - joins a channel    
 :q - quits the bot    

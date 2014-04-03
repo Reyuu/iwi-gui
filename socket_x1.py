@@ -3,8 +3,9 @@
 import sys, socket, random, string, time, logging, threading, ConfigParser
 from time import gmtime, strftime
 global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, counter, TrueMaster, NoticeMsgOnChannelJoin, NoticeMsgOnChannelJoinOn, HighLight
+global BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE
+global SELFCOLOR, PINGCOLOR, NORMALCOLOR, HIGHLIGHTCOLOR, JOINCOLOR, QUITCHANCOLOR, QUITSERVCOLOR
 
-BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE = range(8)
 CHAN = '#polish'
 counter = 0
 def fetchSettings():
@@ -12,6 +13,9 @@ def fetchSettings():
     config.read('configirc.ini')
     try:
         global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, counter, TrueMaster, NoticeMsgOnChannelJoin, NoticeMsgOnChannelJoinOn, HighLight
+        global BLACK, RED, GREEN, YELLOW, BLUE, MAGENTA, CYAN, WHITE, COLORS
+        global SELFCOLOR, PINGCOLOR, NORMALCOLOR, HIGHLIGHTCOLOR, JOINCOLOR, QUITCHANCOLOR, QUITSERVCOLOR
+
         HOST = config.get('Server', 'Server')
         PORT = int(config.get('Server', 'Port'))
         CHAN = config.get('Server', 'Channel')
@@ -30,6 +34,25 @@ def fetchSettings():
         TrueMaster = config.get('Settings', 'BotOwner')
         MASTERS = config.get('Settings', 'Masters').replace(' ', '').split(',')
 
+        BLACK = config.get('Colors', 'Black')
+        RED = config.get('Colors', 'Red')
+        GREEN = config.get('Colors', 'Green')
+        YELLOW = config.get('Colors', 'Yellow')
+        BLUE = config.get('Colors', 'Blue')
+        MAGENTA = config.get('Colors', 'Magenta')
+        CYAN = config.get('Colors', 'Cyan')
+        WHITE = config.get('Colors', 'White')
+        COLORS = {'black':BLACK, 'red':RED, 'green':GREEN,
+        'yellow':YELLOW, 'blue':BLUE, 'magenta': MAGENTA,
+        'cyan':CYAN, 'white':WHITE}
+
+        SELFCOLOR = config.get('TextColors', 'SelfColor')
+        PINGCOLOR = config.get('TextColors', 'PingColor')
+        NORMALCOLOR = config.get('TextColors', 'NormalColor')
+        HIGHLIGHTCOLOR = config.get('TextColors', 'HighlightColor')
+        JOINCOLOR = config.get('TextColors', 'JoinColor')
+        QUITCHANCOLOR = config.get('TextColors', 'QuitChannelColor')
+        QUITSERVCOLOR = config.get('TextColors', 'QuitServerColor')
 
     except:
             print "[!] Error have happened while fetching settings from configirc.ini!"
@@ -43,12 +66,12 @@ def multi_detect(string, inputArray):
             return 1
     return 0
 
-def print_date(pointer, msg, colour=YELLOW):
-    if has_colours:
-        seq = "\x1b[1;%dm" % (30+colour) + strftime("[*] [%H:%M:%S] ",gmtime()) + "\x1b[0m"
-        pointer.pointer(seq+msg, pointer.tex)
-    else:
-        pointer.pointer(strftime("[*] [%H:%M:%S] "+msg, gmtime()) , pointer.tex)
+def print_date(pointer, msg, colour="", postfix="", colors={}):
+    seq = strftime("[*] [%H:%M:%S] ", gmtime())
+    if postfix:
+        seq = seq + postfix
+    pointer.pointer(seq, pointer.tex, colour=colour, newline=False, colors=colors)
+    pointer.pointer(msg, pointer.tex, colors=colors)
 
 class Irc:
     def __init__(self):
@@ -62,7 +85,7 @@ class Irc:
     def sendMsg(self, chan, msg):
         try:
             self.socket.send('PRIVMSG '+chan+' :'+unicode(msg)+'\r\n')
-            print_date(self, '[%s] to <%s>: %s' % (NICK, chan, msg), colour=BLUE)
+            print_date(self, msg, colour=SELFCOLOR, colors=COLORS, postfix='[%s] to <%s>: ' % (NICK, chan))
         except UnicodeEncodeError:
             a = u""
             for char in msg:
@@ -71,7 +94,7 @@ class Irc:
                 except UnicodeEncodeError:
                     a += "?"
             self.socket.send('PRIVMSG '+chan+' :'+unicode(a)+'\r\n')
-            print_date(self, '[%s] to <%s>: %s' % (NICK, chan, a), colour=BLUE)
+            print_date(self, a, colour=SELFCOLOR, colors=COLORS, postfix='[%s] to <%s>: ' % (NICK, chan))
 
     def connect(self):
         #config_fetch()# just couldn't get it to work
@@ -108,7 +131,7 @@ class Irc:
                     if line[0] == "PING":
                         self.send("PONG %s" % line[1])
                         if PING:
-                            print_date(self, "Pinged and ponged.", colour=CYAN)
+                            print_date(self, "Pinged and ponged.", colour=PINGCOLOR, colors=COLORS)
                         else:
                             pass
                     if line[1] == "PRIVMSG":
@@ -118,21 +141,21 @@ class Irc:
                         hld = multi_detect(message, HighLight)
                         if hld:
                             self.lastHL = username
-                        colour = {0:YELLOW, 1:RED}[(hld == True) or (channel == TrueMaster)]
-                        print_date(self, "[%s] to <%s>: %s" % (username, channel, message), colour=colour)
+                        colour = {0:NORMALCOLOR, 1:HIGHLIGHTCOLOR}[(hld == True) or (channel == TrueMaster)]
+                        print_date(self, message, colour=colour, postfix="[%s] to <%s>: " % (username, channel), colors=COLORS)
                         execfile(PLUGINFILE)
                     elif line[1] == "JOIN":
                         username = (line[0].split('!')[0])[1:]
                         if NoticeMsgOnChannelJoinOn == 1:
                             self.send("NOTICE "+username+" :"+NoticeMsgOnChannelJoin)
-                        print_date(self, "[%s] joined the channel <%s>" % (username, ' '.join(line[2:])[1:]), colour=MAGENTA)
+                        print_date(self, "", colour=JOINCOLOR, postfix="[%s] joined the channel <%s>" % (username, ' '.join(line[2:])[1:]), colors=COLORS)
                     elif line[1] == "QUIT":
                         username = (line[0].split('!')[0])[1:]
-                        print_date(self, "[%s] has quit: %s" % (username, ' '.join(line[2:])[1:]), colour=MAGENTA)
+                        print_date(self, "", colour=QUITSERVCOLOR, postfix="[%s] has quit: %s" % (username, ' '.join(line[2:])[1:]), colors=COLORS)
                     elif line[1] == "PART":
                         username = (line[0].split('!')[0])[1:]
                         channel = line[2]
-                        print_date(self, "[%s] leaves from <%s>" % (username, channel), colour=MAGENTA)
+                        print_date(self, "", colour=QUITCHANCOLOR, postfix="[%s] leaves from <%s>" % (username, channel), colors=COLORS)
                     else:
                         print ' '.join(line)
                 except IndexError:
