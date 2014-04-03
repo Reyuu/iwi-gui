@@ -60,7 +60,6 @@ def click(key):
                     execute = False
                     IrcC.send('JOIN '+inputArray[1])
                 elif command == 'ch': # changes channel
-                    socket_x1.socket_x1.CHAN = inputArray[1]
                     socket_x1.CHAN = inputArray[1]
                     execute = False
                 elif command == 'ms': # sets a message to reuse
@@ -126,15 +125,17 @@ title = config.get('Settings', 'TitleWindow')
 
 font_name = config.get('Visuals', 'Typeface')
 font_size = int(config.get('Visuals', 'FontSize'))
+width_window = int(config.get('Visuals', 'WindowWidth'))
+height_window = int(config.get('Visuals', 'WindowHeight'))
 arial = (font_name, font_size)
 
 top = tk.Tk()
 top.wm_title(title)
-tex = tk.Text(master=top, width=80, height=23, font=arial, bg=bgtex, fg=fgtex)
+tex = tk.Text(master=top, width=width_window, height=height_window-1, font=arial, bg=bgtex, fg=fgtex)
 tex.pack(side=tk.TOP)
 bop = tk.Frame()
 bop.pack(side=tk.BOTTOM)
-E1 = tk.Entry(bop, bd=3, width=80, font=arial, bg=e1bg, fg=e1fg)
+E1 = tk.Entry(bop, bd=3, width=width_window, font=arial, bg=e1bg, fg=e1fg)
 E1.bind("<Key>", click)
 E1.pack()
 

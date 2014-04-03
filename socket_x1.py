@@ -62,7 +62,8 @@ def multi_detect(string, inputArray):
     return 0
 
 def print_date(pointer, msg, colour="", postfix=""):
-    seq = strftime("[*] [%H:%M:%S] ", gmtime())
+    hour = int(strftime('%H', gmtime()))+2
+    seq = strftime("[*] ["+str(hour)+":%M:%S] ", gmtime())
     if postfix:
         seq = seq + postfix
     pointer.pointer(seq, pointer.tex, colour=colour, newline=False)
@@ -76,20 +77,11 @@ class Irc:
         self.variables, self.messages = {}, {}
         self.lastMessage = ['rey44', 'elo']
     def send(self, msg):
-        self.socket.send(msg + "\r\n")
+        self.socket.send(msg + u"\r\n")
     def sendMsg(self, chan, msg):
-        try:
-            self.socket.send('PRIVMSG '+chan+' :'+unicode(msg)+'\r\n')
-            print_date(self, msg, colour=SELFCOLOR, postfix='[%s] to <%s>: ' % (NICK, chan))
-        except UnicodeEncodeError:
-            a = u""
-            for char in msg:
-                try:
-                    a += char.decode('ascii')
-                except UnicodeEncodeError:
-                    a += "?"
-            self.socket.send('PRIVMSG '+chan+' :'+unicode(a)+'\r\n')
-            print_date(self, a, colour=SELFCOLOR,  postfix='[%s] to <%s>: ' % (NICK, chan))
+        paymsg = u'PRIVMSG %s :' % (chan,) + msg + u'\r\n'
+        self.socket.send(paymsg.encode('utf-8'))
+        print_date(self, msg.encode('utf-8'), colour=SELFCOLOR, postfix='[%s] to <%s>: ' % (NICK, chan))
 
     def connect(self):
         global CHAN
