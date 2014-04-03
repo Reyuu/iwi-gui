@@ -7,31 +7,27 @@ from socket_x1 import *
 import Tkinter as tk
 import tkFont
 
-global IrcC
+global IrcC, count
+count = 0
 IrcC = socket_x1.Irc()
 
 def cbc(idd, tex):
     return lambda : callback(idd, tex)
 
-def callback(text, tex, colour='', newline=True, colors={}):
+def callback(text, tex, colour='', newline=True):
     tex.insert(tk.END, str(text)+{0:'',1:'\n'}[newline])
     tex.see(tk.END) # Scroll if necessary
     if colour:
-        highlight(tex, colour, colors)
+        highlight(tex, colour)
 
-def highlight(tex, colour, colors):
+def highlight(tex, colour):
+    global count
     idx = str(int(tex.index('end').split('.')[0]) - 1)+'.0'
     idx2 = str(int(tex.index('end').split('.')[0]) - 1)+'.end'
-    tex.tag_add(colour, idx, idx2)
-    tex.tag_config("black", foreground=colors['black'])
-    tex.tag_config("red", foreground=colors['red'])
-    tex.tag_config("green", foreground=colors['green'])
-    tex.tag_config("yellow", foreground=colors['yellow'])
-    tex.tag_config("blue", foreground=colors['blue'])
-    tex.tag_config("magenta", foreground=colors['magenta'])
-    tex.tag_config("cyan", foreground=colors['cyan'])
-    tex.tag_config("white", foreground=colors['white'])
-
+    tag = '__'+str(count)
+    count += 1
+    tex.tag_add(tag, idx, idx2)
+    tex.tag_config(tag, foreground=colour)
 
 def click(key):
     try:
