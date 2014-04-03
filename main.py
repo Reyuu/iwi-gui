@@ -117,7 +117,10 @@ e1bg = config.get('TextColors', 'InputBackground')
 e1fg = config.get('TextColors', 'InputForeground')
 
 title = config.get('Settings', 'TitleWindow')
-arial = ("Arial", "10")
+
+font_name = config.get('Visuals', 'Typeface')
+font_size = int(config.get('Visuals', 'FontSize'))
+arial = (font_name, font_size)
 
 top = tk.Tk()
 top.wm_title(title)
