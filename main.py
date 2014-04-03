@@ -91,6 +91,12 @@ def click(key):
                             new_msg += word
                         new_msg += ' '
                     text = new_msg
+                elif command in ('names', 'n'):
+                    tunnel = specialChan
+                    if len(inputArray) > 1:
+                        tunnel = inputArray[1]
+                    IrcC.send('NAMES '+tunnel)
+                    execute = False
             if execute:
                 IrcC.logger.info(" ["+NICK+"] "+text+" to "+specialChan+":")
                 IrcC.sendMsg(specialChan, text)

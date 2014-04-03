@@ -17,6 +17,7 @@ Commands:
 :md id - sends the specified message    
 :vs variable text - definied a variable to use later [without $ before variable]    
 :v text - sends text, but with variables replaced to their values [with $ before variables]    
+:n/:names [channel] - shows list of users for default channel, the channel argument is optional    
 
 Predefinied variables:    
 $hl - last user that highlighted    

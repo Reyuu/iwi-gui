@@ -3,7 +3,7 @@
 import sys, socket, random, string, time, logging, threading, ConfigParser
 from time import gmtime, strftime
 global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, counter, TrueMaster, NoticeMsgOnChannelJoin, NoticeMsgOnChannelJoinOn, HighLight
-global SELFCOLOR, PINGCOLOR, NORMALCOLOR, HIGHLIGHTCOLOR, JOINCOLOR, QUITCHANCOLOR, QUITSERVCOLOR, PASSWORD, QUITMSGON, JOINMSGON
+global SELFCOLOR, PINGCOLOR, NORMALCOLOR, HIGHLIGHTCOLOR, JOINCOLOR, QUITCHANCOLOR, QUITSERVCOLOR, PASSWORD, QUITMSGON, JOINMSGON, USERSLIST, MOTDCOLOR
 
 CHAN = '#polish'
 counter = 0
@@ -12,7 +12,7 @@ def fetchSettings():
     config.read('configirc.ini')
     try:
         global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, counter, TrueMaster, NoticeMsgOnChannelJoin, NoticeMsgOnChannelJoinOn, HighLight
-        global SELFCOLOR, PINGCOLOR, NORMALCOLOR, HIGHLIGHTCOLOR, JOINCOLOR, QUITCHANCOLOR, QUITSERVCOLOR, PASSWORD, QUITMSGON, JOINMSGON
+        global SELFCOLOR, PINGCOLOR, NORMALCOLOR, HIGHLIGHTCOLOR, JOINCOLOR, QUITCHANCOLOR, QUITSERVCOLOR, PASSWORD, QUITMSGON, JOINMSGON, USERSLIST, MOTDCOLOR
 
         HOST = config.get('Server', 'Server')
         PORT = int(config.get('Server', 'Port'))
@@ -39,6 +39,8 @@ def fetchSettings():
         JOINCOLOR = config.get('TextColors', 'JoinColor')
         QUITCHANCOLOR = config.get('TextColors', 'QuitChannelColor')
         QUITSERVCOLOR = config.get('TextColors', 'QuitServerColor')
+        USERSLIST = config.get('TextColors', 'UsersListColor')
+        MOTDCOLOR = config.get('TextColors', 'MotdColor')
 
         QUITMSGON = int(config.get('Visuals', 'QuitMessagesOn'))
         JOINMSGON = int(config.get('Visuals', 'JoinMessagesOn'))
@@ -155,6 +157,14 @@ class Irc:
                             username = (line[0].split('!')[0])[1:]
                             channel = line[2]
                             print_date(self, "", colour=QUITCHANCOLOR, postfix="[%s] leaves from <%s>" % (username, channel), )
+                    elif line[1] == '353': #list of users
+                        channel = line[4]
+                        users = ', '.join(line[5:])[1:]
+                        print_date(self, "", colour=USERSLIST, postfix="["+channel+"] List of users: "+users)
+                    elif line[1] == '332': #motd
+                        channel = line[3]
+                        motd = ' '.join(line[4:])[1:]
+                        print_date(self, motd, colour=MOTDCOLOR, postfix="["+channel+"] Motd: ")
                     else:
                         print ' '.join(line)
                 except IndexError:
