@@ -3,7 +3,8 @@
 import sys, socket, random, string, time, logging, threading, ConfigParser, os
 from time import gmtime, strftime
 global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, counter, TrueMaster, NoticeMsgOnChannelJoin, NoticeMsgOnChannelJoinOn, HighLight
-global SELFCOLOR, PINGCOLOR, NORMALCOLOR, HIGHLIGHTCOLOR, JOINCOLOR, QUITCHANCOLOR, QUITSERVCOLOR, PASSWORD, QUITMSGON, JOINMSGON, USERSLIST, MOTDCOLOR, NOTIFILE
+global SELFCOLOR, PINGCOLOR, NORMALCOLOR, HIGHLIGHTCOLOR, JOINCOLOR, QUITCHANCOLOR, QUITSERVCOLOR, PASSWORD, QUITMSGON, JOINMSGON, USERSLIST, MOTDCOLOR, NOTIFILE, ERRORCOLOR
+global OPACTIONSCOLOR, NOTICECOLOR
 
 CHAN = '#polish'
 counter = 0
@@ -12,7 +13,8 @@ def fetchSettings():
     config.read('configirc.ini')
     try:
         global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, counter, TrueMaster, NoticeMsgOnChannelJoin, NoticeMsgOnChannelJoinOn, HighLight
-        global SELFCOLOR, PINGCOLOR, NORMALCOLOR, HIGHLIGHTCOLOR, JOINCOLOR, QUITCHANCOLOR, QUITSERVCOLOR, PASSWORD, QUITMSGON, JOINMSGON, USERSLIST, MOTDCOLOR, NOTIFILE
+        global SELFCOLOR, PINGCOLOR, NORMALCOLOR, HIGHLIGHTCOLOR, JOINCOLOR, QUITCHANCOLOR, QUITSERVCOLOR, PASSWORD, QUITMSGON, JOINMSGON, USERSLIST, MOTDCOLOR, NOTIFILE, ERRORCOLOR
+        global OPACTIONSCOLOR, NOTICECOLOR
 
         HOST = config.get('Server', 'Server')
         PORT = int(config.get('Server', 'Port'))
@@ -41,6 +43,9 @@ def fetchSettings():
         QUITSERVCOLOR = config.get('TextColors', 'QuitServerColor')
         USERSLIST = config.get('TextColors', 'UsersListColor')
         MOTDCOLOR = config.get('TextColors', 'MotdColor')
+        ERRORCOLOR = config.get('TextColors', 'ErrorColor')
+        NOTICECOLOR = config.get('TextColors', 'NoticeColor')
+        OPACTIONSCOLOR = config.get('TextColors', 'OpActionColor')
 
         QUITMSGON = int(config.get('Visuals', 'QuitMessagesOn'))
         JOINMSGON = int(config.get('Visuals', 'JoinMessagesOn'))
@@ -106,7 +111,7 @@ class Irc:
         self.send("JOIN %s" % (CHAN))
         self.socket.settimeout(TIMEOUTTIME)
         time.sleep(2)
-        self.send("PRIVMSG "+CHAN+" :"+NoticeMsgOnChannelJoin)
+        self.sendMsg(CHAN, NoticeMsgOnChannelJoin)
     def whileSection(self):
         while True:
             try:
@@ -127,7 +132,7 @@ class Irc:
                             print_date(self, "Pinged and ponged.", colour=PINGCOLOR, )
                         else:
                             pass
-                    if line[1] == "PRIVMSG":
+                    elif line[1] == "PRIVMSG":
                         channel = line[2]
                         message = (' '.join(line[3:]))[1:]
                         username = (line[0].split('!')[0])[1:]
@@ -146,7 +151,7 @@ class Irc:
                             username = (line[0].split('!')[0])[1:]
                             if NoticeMsgOnChannelJoinOn == 1:
                                 self.send("NOTICE "+username+" :"+NoticeMsgOnChannelJoin)
-                            print_date(self, "", colour=JOINCOLOR, postfix="[%s] joined the channel <%s>" % (username, ' '.join(line[2:])[1:]), )
+                            print_date(self, "", colour=JOINCOLOR, postfix="[%s] joined the channel <%s>" % (username, ' '.join(line[1:])[1:]), )
                     elif line[1] == "QUIT":
                         if QUITMSGON:
                             username = (line[0].split('!')[0])[1:]
@@ -156,6 +161,13 @@ class Irc:
                             username = (line[0].split('!')[0])[1:]
                             channel = line[2]
                             print_date(self, "", colour=QUITCHANCOLOR, postfix="[%s] leaves from <%s>" % (username, channel), )
+                    elif line[1] == "KICK":
+                        username_op = (line[0].split('!')[0])[1:]
+                        username_kicked = line[3]
+                        channel = line[2]
+                        reason = ' '.join(line[4:])[1:]
+                        msggg = "["+username_kicked+"] have been kicked from ["+channel+"] by <"+username_op+"> for: "
+                        print_date(self, reason, colour=OPACTIONSCOLOR, postfix=msggg)
                     elif line[1] == '353': #list of users
                         channel = line[4]
                         users = ', '.join(line[5:])[1:]
@@ -164,6 +176,15 @@ class Irc:
                         channel = line[3]
                         motd = ' '.join(line[4:])[1:]
                         print_date(self, motd, colour=MOTDCOLOR, postfix="["+channel+"] Motd: ")
+                    elif line[1] == '404': #error
+                        reason = ' '.join(line[4:])[1:]
+                        print_date(self, '', colour=ERRORCOLOR, postfix="Error: "+reason)
+                    elif line[1] == '433': #nickname in use
+                        reason = ' '.join(line[4:])[1:]
+                        print_date(self, '', colour=ERRORCOLOR, postfix="Error: "+reason)
+                    elif line[1] == '451':
+                        reason = ' '.join(line[3:])[1:]
+                        print_date(self, '', colour=NOTICECOLOR, postfix="Server Notice: "+reason)
                     else:
                         print ' '.join(line)
                 except IndexError:

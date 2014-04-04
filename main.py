@@ -15,10 +15,12 @@ def cbc(idd, tex):
     return lambda : callback(idd, tex)
 
 def callback(text, tex, colour='', newline=True):
+    tex.configure(state=tk.NORMAL)
     tex.insert(tk.END, str(text)+{0:'',1:'\n'}[newline])
     tex.see(tk.END) # Scroll if necessary
     if colour:
         highlight(tex, colour)
+    tex.configure(state=tk.DISABLED)
 
 def highlight(tex, colour):
     global count
@@ -132,6 +134,7 @@ arial = (font_name, font_size)
 top = tk.Tk()
 top.wm_title(title)
 tex = tk.Text(master=top, width=width_window, height=height_window-1, font=arial, bg=bgtex, fg=fgtex)
+tex.configure(state=tk.DISABLED)
 tex.pack(side=tk.TOP)
 bop = tk.Frame()
 bop.pack(side=tk.BOTTOM)
