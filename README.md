@@ -7,10 +7,10 @@ Many thanks to maciej01.
 Requires Tkinter for gui (pip install Tkinter)
 
 Commands:    
-| Name | Parameters | Description |    
-|:------:|:------------:|:-------------:|    
-|:j|channel|joins a specified channel    
-
+| Name | Parameters | Description |     
+|:------:|:------------:|:-------------:|      
+|:j|channel|joins a specified channel|    
+|:q|[none]|quits the client|
 
 :j channel - joins a channel    
 :q - quits the bot    
