@@ -1,30 +1,32 @@
-Attempt to create simple irc framework.    
-This is just a proof of concept.    
-Working on sockets.    
+##iWi - an irc client - from humans, for humans   
 
-Many thanks to maciej01.    
+**Created by Reyuu and maciej01.**    
 
-Requires Tkinter for gui (pip install Tkinter)
+###Commands:    
+| Command | Parameters  | Description |
+| :------------: |:---------------:| :-----:|
+| :j | [channel] | joins a specified channel |
+| :q |  | quits the client |
+| :ch | [channel] | changes the default output channel to a specified one|
+|:l|[message]|sends the previous message, the parameter appends something to end - **optional param**|
+|:p|[user/channel]|sends a private message to specified user or channel|
+|:r|[raw data]|sends raw data to server, for ex. PRIVMSG #channel :hi|
+|:ms|[id] [message]|predefinies a message to use later|
+|:md|[id]|sends an already definied (by :ms) message|
+|:vs|[variable] [content]|definies a variable to use later [without $ before variable]|
+|:v|[message]|sends a message, but with variables replaced to their values [with $ before variables]|
+|:n/:names|[channel]|shows a list of users for default channel, **the channel argument is optional**
 
-Commands:    
-| Left-Aligned  | Center Aligned  | Right Aligned |
-| :------------ |:---------------:| -----:|
-| col 3 is      | some wordy text | $1600 |
-| col 2 is      | centered        |   $12 |
-| zebra stripes | are neat        |    $1 |
+###Predefinied variables:     
+| Variable | Description |
+| :------: | :---------: |
+| $hl | last user that higlighted you |
+| $lm | last message you sent|
 
-:j channel - joins a channel    
-:q - quits the bot    
-:ch channel - sets the default channel to send messages and output to specified channel    
-:l message - sends back the previous message, the parameter is not necessary, it appends it at end    
-:p user/channel message - sends a private message to specified user or channel    
-:r input - sends raw messages to server, for ex PRIVMSG #channel :message    
-:ms id message - definies a message to use later    
-:md id - sends the specified message    
-:vs variable text - definied a variable to use later [without $ before variable]    
-:v text - sends text, but with variables replaced to their values [with $ before variables]    
-:n/:names [channel] - shows list of users for default channel, the channel argument is optional    
+###Requirements:    
+* Python 2.7 - get it from [the official python website](https://www.python.org/download/releases/2.7.6/)
+* Tkinter - install it using [pip](https://pypi.python.org/pypi/pip) - *pip install Tkinter*
 
-Predefinied variables:    
-$hl - last user that highlighted    
-$lm - last message you sent    
+Highlight sound is at the moment only getting played on Windows OS - due to usage of winsound package.
+
+#Enjoy!
