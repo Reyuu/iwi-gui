@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 import sys, socket, random, string, time, logging, threading, ConfigParser, os
 from time import gmtime, strftime
-global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, counter, TrueMaster, NoticeMsgOnChannelJoin, NoticeMsgOnChannelJoinOn, HighLight
+global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, counter, TrueMaster, NOTICEMSGONCHANNELJOIN, NOTICEMSGONCHANNELJOINON, HIGHLIGHT
 global SELFCOLOR, PINGCOLOR, NORMALCOLOR, HIGHLIGHTCOLOR, JOINCOLOR, QUITCHANCOLOR, QUITSERVCOLOR, PASSWORD, QUITMSGON, JOINMSGON, USERSLIST, MOTDCOLOR, NOTIFILE, ERRORCOLOR
 global OPACTIONSCOLOR, NOTICECOLOR
 
@@ -12,7 +12,7 @@ def fetchSettings():
     config = ConfigParser.ConfigParser()
     config.read('configirc.ini')
     try:
-        global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, counter, TrueMaster, NoticeMsgOnChannelJoin, NoticeMsgOnChannelJoinOn, HighLight
+        global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, counter, TrueMaster, NOTICEMSGONCHANNELJOIN, NOTICEMSGONCHANNELJOINON, HIGHLIGHT
         global SELFCOLOR, PINGCOLOR, NORMALCOLOR, HIGHLIGHTCOLOR, JOINCOLOR, QUITCHANCOLOR, QUITSERVCOLOR, PASSWORD, QUITMSGON, JOINMSGON, USERSLIST, MOTDCOLOR, NOTIFILE, ERRORCOLOR
         global OPACTIONSCOLOR, NOTICECOLOR
 
@@ -24,10 +24,10 @@ def fetchSettings():
         IDENT = config.get('Bot', 'Ident')
         REALNAME = config.get('Bot', 'RealName')
 
-        NoticeMsgOnChannelJoin = config.get('Messages', 'WelcomeMsg')
-        NoticeMsgOnChannelJoinOn = config.get('Messages', 'WelcomeMsgActive')
+        NOTICEMSGONCHANNELJOIN = config.get('Messages', 'WelcomeMsg')
+        NOTICEMSGONCHANNELJOINON = config.get('Messages', 'WelcomeMsgActive')
         PING = config.get('Messages', 'OutputPing')
-        HighLight = config.get('Messages', 'HighlightPhrases').split(',')
+        HIGHLIGHT = config.get('Messages', 'HighlightPhrases').split(',')
 
         TIMEOUTTIME = float(config.get('Settings', 'SocketDelay'))
         PLUGINFILE = config.get('Settings', 'PluginFile')
@@ -111,7 +111,7 @@ class Irc:
         self.send("JOIN %s" % (CHAN))
         self.socket.settimeout(TIMEOUTTIME)
         time.sleep(2)
-        self.sendMsg(CHAN, NoticeMsgOnChannelJoin)
+        self.sendMsg(CHAN, NOTICEMSGONCHANNELJOIN)
     def whileSection(self):
         while True:
             try:
@@ -136,7 +136,7 @@ class Irc:
                         channel = line[2]
                         message = (' '.join(line[3:]))[1:]
                         username = (line[0].split('!')[0])[1:]
-                        hld = multi_detect(message, HighLight)
+                        hld = multi_detect(message, HIGHLIGHT)
                         if hld:
                             self.lastHL = username
                         if hld or (channel == TrueMaster):
@@ -149,8 +149,8 @@ class Irc:
                     elif line[1] == "JOIN":
                         if JOINMSGON:
                             username = (line[0].split('!')[0])[1:]
-                            if NoticeMsgOnChannelJoinOn == 1:
-                                self.send("NOTICE "+username+" :"+NoticeMsgOnChannelJoin)
+                            if NOTICEMSGONCHANNELJOINON == 1:
+                                self.send("NOTICE "+username+" :"+NOTICEMSGONCHANNELJOIN)
                             print_date(self, "", colour=JOINCOLOR, postfix="[%s] joined the channel <%s>" % (username, ' '.join(line[1:])[1:]), )
                     elif line[1] == "QUIT":
                         if QUITMSGON:
