@@ -2,6 +2,8 @@
 
 **Created by Reyuu and maciej01.**    
 
+![That's my son!](http://www.maciej01.tk/bb32f80c44.png)
+
 ###Commands:    
 | Command | Parameters  | Description |
 | :------------: |:---------------:| :-----:|
