@@ -7,6 +7,11 @@ Many thanks to maciej01.
 Requires Tkinter for gui (pip install Tkinter)
 
 Commands:    
+| Name | Parameters | Description |    
+|:------:|:------------:|:-------------:|    
+|:j|channel|joins a specified channel    
+
+
 :j channel - joins a channel    
 :q - quits the bot    
 :ch channel - sets the default channel to send messages and output to specified channel    
