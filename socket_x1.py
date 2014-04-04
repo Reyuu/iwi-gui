@@ -4,7 +4,7 @@ import sys, socket, random, string, time, logging, threading, ConfigParser, os
 from time import gmtime, strftime
 global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, counter, TrueMaster, NOTICEMSGONCHANNELJOIN, NOTICEMSGONCHANNELJOINON, HIGHLIGHT
 global SELFCOLOR, PINGCOLOR, NORMALCOLOR, HIGHLIGHTCOLOR, JOINCOLOR, QUITCHANCOLOR, QUITSERVCOLOR, PASSWORD, QUITMSGON, JOINMSGON, USERSLIST, MOTDCOLOR, NOTIFILE, ERRORCOLOR
-global OPACTIONSCOLOR, NOTICECOLOR
+global OPACTIONSCOLOR, NOTICECOLOR, SERVMSGON
 
 CHAN = '#polish'
 counter = 0
@@ -14,7 +14,7 @@ def fetchSettings():
     try:
         global HOST, PORT, NICK, IDENT, REALNAME, CHAN, TIMEOUTTIME, PING, PLUGINFILE, MASTERS, counter, TrueMaster, NOTICEMSGONCHANNELJOIN, NOTICEMSGONCHANNELJOINON, HIGHLIGHT
         global SELFCOLOR, PINGCOLOR, NORMALCOLOR, HIGHLIGHTCOLOR, JOINCOLOR, QUITCHANCOLOR, QUITSERVCOLOR, PASSWORD, QUITMSGON, JOINMSGON, USERSLIST, MOTDCOLOR, NOTIFILE, ERRORCOLOR
-        global OPACTIONSCOLOR, NOTICECOLOR
+        global OPACTIONSCOLOR, NOTICECOLOR, SERVMSGON
 
         HOST = config.get('Server', 'Server')
         PORT = int(config.get('Server', 'Port'))
@@ -49,6 +49,7 @@ def fetchSettings():
 
         QUITMSGON = int(config.get('Visuals', 'QuitMessagesOn'))
         JOINMSGON = int(config.get('Visuals', 'JoinMessagesOn'))
+        SERVMSGON = int(config.get('Visuals', 'ServerMessagesOn'))
     except:
             print "[!] Error have happened while fetching settings from configirc.ini!"
             sys.exit(1)
@@ -151,7 +152,7 @@ class Irc:
                             username = (line[0].split('!')[0])[1:]
                             if NOTICEMSGONCHANNELJOINON == 1:
                                 self.send("NOTICE "+username+" :"+NOTICEMSGONCHANNELJOIN)
-                            print_date(self, "", colour=JOINCOLOR, postfix="[%s] joined the channel <%s>" % (username, ' '.join(line[1:])[1:]), )
+                            print_date(self, "", colour=JOINCOLOR, postfix="[%s] joined the channel <%s>" % (username, ' '.join(line[2:])[1:]), )
                     elif line[1] == "QUIT":
                         if QUITMSGON:
                             username = (line[0].split('!')[0])[1:]
@@ -168,6 +169,12 @@ class Irc:
                         reason = ' '.join(line[4:])[1:]
                         msggg = "["+username_kicked+"] have been kicked from ["+channel+"] by <"+username_op+"> for: "
                         print_date(self, reason, colour=OPACTIONSCOLOR, postfix=msggg)
+                    elif line[1] == "MODE":
+                        username_give = (line[0].split('!')[0])[1:]
+                        username_get = line[2]
+                        mode_get = (line[3])[1:]
+                        msggg = "["+username_give+"] gave mode "+mode_get+" to "+username_get
+                        print_date(self, '', colour=OPACTIONSCOLOR, postfix=msggg)
                     elif line[1] == '353': #list of users
                         channel = line[4]
                         users = ', '.join(line[5:])[1:]
@@ -182,9 +189,13 @@ class Irc:
                     elif line[1] == '433': #nickname in use
                         reason = ' '.join(line[4:])[1:]
                         print_date(self, '', colour=ERRORCOLOR, postfix="Error: "+reason)
-                    elif line[1] == '451':
+                    elif line[1] == '451': #server notice
                         reason = ' '.join(line[3:])[1:]
                         print_date(self, '', colour=NOTICECOLOR, postfix="Server Notice: "+reason)
+                    elif line[1] == '372': #server message
+                        if SERVMSGON:
+                            reason = ' '.join(line[3:])[1:]
+                            print_date(self, '', colour=NOTICECOLOR, postfix="[SERVER] "+reason)
                     else:
                         print ' '.join(line)
                 except IndexError:
