@@ -7,10 +7,11 @@ Many thanks to maciej01.
 Requires Tkinter for gui (pip install Tkinter)
 
 Commands:    
-| Name | Parameters | Description |     
-|:------:|:------------:|:-------------:|      
-|:j|channel|joins a specified channel|    
-|:q|[none]|quits the client|
+| Left-Aligned  | Center Aligned  | Right Aligned |
+| :------------ |:---------------:| -----:|
+| col 3 is      | some wordy text | $1600 |
+| col 2 is      | centered        |   $12 |
+| zebra stripes | are neat        |    $1 |
 
 :j channel - joins a channel    
 :q - quits the bot    
