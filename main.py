@@ -100,9 +100,13 @@ def click(key):
                     execute = False
             if execute:
                 IrcC.logger.info(" ["+NICK+"] "+text+" to "+specialChan+":")
-                IrcC.sendMsg(specialChan, text)
-                IrcC.lastMessage[1] = text
-                IrcC.lastMessage[0] = specialChan
+                if '\n' in text:
+                    lines = []
+                    for line in text.split('\n'):
+                        lines.append((specialChan, line))
+                    IrcC.sendMulti(lines)
+                else:
+                    IrcC.sendMsg(specialChan, text)
     except TypeError:
         pass
 

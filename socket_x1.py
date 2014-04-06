@@ -62,6 +62,14 @@ def fetchSettings():
         NOTIFILE = config.get('Settings', 'NotificationFile')
     except:
         NOTIFILE = ''
+    if len(sys.argv) > 1:
+        HOST = sys.argv[1]
+    if len(sys.argv) > 2:
+        CHAN = sys.argv[2]
+    if len(sys.argv) > 3:
+        NICK = sys.argv[3]
+    if len(sys.argv) > 4:
+        PASSWORD = sys.argv[4]
 has_colours = False
 def multi_detect(string, inputArray):
     for item in inputArray:
@@ -85,13 +93,18 @@ class Irc:
         self.lastHL = 'Null'
         self.variables, self.messages = {}, {}
         self.lastMessage = ['rey44', 'elo']
+        self.sendQueue = []
     def send(self, msg):
         self.socket.send(msg + u"\r\n")
     def sendMsg(self, chan, msg):
         paymsg = u'PRIVMSG %s :' % (chan,) + msg + u'\r\n'
         self.socket.send(paymsg.encode('utf-8'))
         print_date(self, msg.encode('utf-8'), colour=SELFCOLOR, postfix='[%s] to <%s>: ' % (NICK, chan))
-
+        self.lastMessage[1] = msg
+        self.lastMessage[0] = chan
+    def sendMulti(self, messages):
+        for channel, message in messages:
+            self.sendQueue.append((channel, message))
     def connect(self):
         global CHAN
         #config_fetch()# just couldn't get it to work
@@ -119,6 +132,9 @@ class Irc:
                 readbuffer = self.socket.recv(1024)
             except:
                 readbuffer = ""
+            if self.sendQueue:
+                chan, msg = self.sendQueue.pop(0)                
+                self.sendMsg(chan, msg)
             temp = string.split(readbuffer, "\n")
             for line in temp:
                 try:
