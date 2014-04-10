@@ -161,7 +161,11 @@ class Irc:
                                 import winsound
                                 winsound.PlaySound(NOTIFILE, winsound.SND_FILENAME|winsound.SND_ASYNC)
                         colour = {0:NORMALCOLOR, 1:HIGHLIGHTCOLOR}[hld or (channel == TrueMaster)]
-                        print_date(self, message, colour=colour, postfix="[%s] to <%s>: " % (username, channel), )
+                        if 'ACTION' in message:
+                            m_sg = ' '.join(message.split(' ')[1:])[:-1]
+                            print_date(self, '', colour=colour, postfix="<%s> * %s %s *" % (channel, username, m_sg))
+                        else:
+                            print_date(self, message, colour=colour, postfix="[%s] to <%s>: " % (username, channel), )
                         execfile(PLUGINFILE)
                     elif line[1] == "JOIN":
                         if JOINMSGON:
@@ -206,7 +210,7 @@ class Irc:
                         reason = ' '.join(line[4:])[1:]
                         print_date(self, '', colour=ERRORCOLOR, postfix="Error: "+reason)
                     elif line[1] == '451': #server notice
-                        reason = ' '.join(line[3:])[1:]
+                        reason = ' '.join(line[4:])[1:]
                         print_date(self, '', colour=NOTICECOLOR, postfix="Server Notice: "+reason)
                     elif line[1] == '372': #server message
                         if SERVMSGON:

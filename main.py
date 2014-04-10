@@ -61,6 +61,7 @@ def click(key):
                 elif command == 'j': # join to a channel
                     execute = False
                     IrcC.send('JOIN '+inputArray[1])
+                    print_date(IrcC, "", colour=JOINCOLOR, postfix="[%s] joined the channel <%s>" % (socket_x1.CHAN, inputArray[1]))
                 elif command == 'ch': # changes channel
                     socket_x1.CHAN = inputArray[1]
                     execute = False
@@ -98,6 +99,13 @@ def click(key):
                         tunnel = inputArray[1]
                     IrcC.send('NAMES '+tunnel)
                     execute = False
+                elif command == 'part':
+                    chan = specialChan
+                    if len(inputArray) > 1:
+                        chan = inputArray[1]
+                    IrcC.send('PART '+chan)
+                    execute = False
+                    socket_x1.print_date(IrcC, "", colour=QUITCHANCOLOR, postfix="[%s] leaves from <%s>" % (socket_x1.NICK, chan), )
             if execute:
                 IrcC.logger.info(" ["+NICK+"] "+text+" to "+specialChan+":")
                 if '\n' in text:
@@ -133,9 +141,11 @@ font_name = config.get('Visuals', 'Typeface')
 font_size = int(config.get('Visuals', 'FontSize'))
 width_window = int(config.get('Visuals', 'WindowWidth'))
 height_window = int(config.get('Visuals', 'WindowHeight'))
+transparency_window = float(config.get('Visuals', 'WindowTransparency'))
 arial = (font_name, font_size)
 
 top = tk.Tk()
+top.attributes('-alpha', transparency_window)
 top.wm_title(title)
 tex = tk.Text(master=top, width=width_window, height=height_window-1, font=arial, bg=bgtex, fg=fgtex)
 tex.configure(state=tk.DISABLED)
