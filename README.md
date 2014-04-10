@@ -17,7 +17,8 @@
 |:md|[id]|sends an already definied (by :ms) message|
 |:vs|[variable] [content]|definies a variable to use later [without $ before variable]|
 |:v|[message]|sends a message, but with variables replaced to their values [with $ before variables]|
-|:n/:names|[channel]|shows a list of users for default channel, **the channel argument is optional**
+|:n/:names|[channel]|shows a list of users for default channel, **the channel argument is optional**|
+|:part|[channel]|quits from a specified channel|
 
 ###Predefinied variables:     
 | Variable | Description |
