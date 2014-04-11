@@ -200,6 +200,11 @@ class Irc:
                         nick_before = (line[0].split('!')[0])[1:]
                         nick_after = (' '.join(line[2:]))[1:]
                         print_date(self, "", colour=OPACTIONSCOLOR, postfix="[%s] changes nick to [%s]" % (nick_before, nick_after))
+                    elif line[1] == "NOTICE":
+                        who_noticed = (line[0].split('!')[0])[1:]
+                        to_whom = line[2]
+                        notice_msg = (' '.join(line[3:]))[1:]
+                        print_date(self, "", colour=NOTICECOLOR, postfix="["+who_noticed+"] to ["+to_whom+"]: "+notice_msg)
                     elif line[1] == '353': #list of users
                         channel = line[4]
                         users = ', '.join(line[5:])[1:]
