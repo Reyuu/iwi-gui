@@ -1,4 +1,4 @@
-##iWi - an irc client - from humans, for humans   
+##iWi GUI - an irc client - from humans, for humans   
 
 **Created by Reyuu and maciej01.**    
 
