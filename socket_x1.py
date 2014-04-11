@@ -50,6 +50,7 @@ def fetchSettings():
         QUITMSGON = int(config.get('Visuals', 'QuitMessagesOn'))
         JOINMSGON = int(config.get('Visuals', 'JoinMessagesOn'))
         SERVMSGON = int(config.get('Visuals', 'ServerMessagesOn'))
+
     except:
             print "[!] Error have happened while fetching settings from configirc.ini!"
             sys.exit(1)
@@ -195,6 +196,10 @@ class Irc:
                         mode_get = (line[3])[1:]
                         msggg = "["+username_give+"] gave mode "+mode_get+" to "+username_get
                         print_date(self, '', colour=OPACTIONSCOLOR, postfix=msggg)
+                    elif line[1] == "NICK":
+                        nick_before = (line[0].split('!')[0])[1:]
+                        nick_after = (' '.join(line[2:]))[1:]
+                        print_date(self, "", colour=OPACTIONSCOLOR, postfix="[%s] changes nick to [%s]" % (nick_before, nick_after))
                     elif line[1] == '353': #list of users
                         channel = line[4]
                         users = ', '.join(line[5:])[1:]

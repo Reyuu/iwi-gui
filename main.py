@@ -106,6 +106,12 @@ def click(key):
                     IrcC.send('PART '+chan)
                     execute = False
                     socket_x1.print_date(IrcC, "", colour=QUITCHANCOLOR, postfix="[%s] leaves from <%s>" % (socket_x1.NICK, chan), )
+                elif command == 'nick':
+                    execute = False
+                    new_nick = inputArray[1]
+                    IrcC.send('NICK '+new_nick)
+                    socket_x1.print_date(IrcC, "", colour=OPACTIONSCOLOR, postfix="[%s] changes nick to [%s]" % (socket_x1.NICK, new_nick))
+                    socket_x1.NICK = new_nick
             if execute:
                 IrcC.logger.info(" ["+NICK+"] "+text+" to "+specialChan+":")
                 if '\n' in text:
