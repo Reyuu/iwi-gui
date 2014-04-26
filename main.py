@@ -93,6 +93,14 @@ def click(key):
                             new_msg += word
                         new_msg += ' '
                     text = new_msg
+                elif command == 'me':
+                    execute = False
+                    text = 'ACTION '+' '.join(inputArray[1:])+''
+                    print_date(IrcC, '', colour=socket_x1.SELFCOLOR, postfix="<%s> * %s %s *" % (specialChan, socket_x1.NICK, ' '.join(inputArray[1:])))
+                    paymsg = u'PRIVMSG %s :' % (specialChan,) + text + u'\r\n'
+                    IrcC.socket.send(paymsg.encode('utf-8'))
+                    IrcC.lastMessage[1] = text
+                    IrcC.lastMessage[0] = specialChan
                 elif command in ('names', 'n'):
                     tunnel = specialChan
                     if len(inputArray) > 1:

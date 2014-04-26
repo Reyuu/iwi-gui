@@ -20,6 +20,7 @@
 |:n/:names|[channel]|shows a list of users for default channel, **the channel argument is optional**|
 |:part|[channel]|quits from a specified channel|
 |:nick|[nick]|changes your nick|
+|:me|[action]|sends an action to a specified channel|
 
 ###Predefinied variables:     
 | Variable | Description |
