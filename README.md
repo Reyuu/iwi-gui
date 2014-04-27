@@ -21,6 +21,7 @@
 |:part|[channel]|quits from a specified channel|
 |:nick|[nick]|changes your nick|
 |:me|[action]|sends an action to a specified channel|
+|:pass/:ident/:identify|[password]|identifies with NickServ|
 
 ###Predefinied variables:     
 | Variable | Description |

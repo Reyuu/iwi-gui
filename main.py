@@ -118,8 +118,10 @@ def click(key):
                     execute = False
                     new_nick = inputArray[1]
                     IrcC.send('NICK '+new_nick)
-                    socket_x1.print_date(IrcC, "", colour=OPACTIONSCOLOR, postfix="[%s] changes nick to [%s]" % (socket_x1.NICK, new_nick))
                     socket_x1.NICK = new_nick
+                elif command in ('ident', 'pass', 'identify'):
+                    text = 'IDENTIFY '+inputArray[1]
+                    specialChan = 'NickServ'
             if execute:
                 IrcC.logger.info(" ["+NICK+"] "+text+" to "+specialChan+":")
                 if '\n' in text:
